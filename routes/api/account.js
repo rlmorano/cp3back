@@ -70,7 +70,7 @@ router.put(
         min: 6
       }
     ),
-    check('newPassword2')
+    check('newConfirmPassword')
       .not()
       .isEmpty()
       .withMessage('Confirm New Password field is required')
