@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const users = require('./routes/api/users');
 const account = require('./routes/api/account');
+const booking = require('./routes/api/bookings');
 const cors = require('cors');
 
 const app = express();
@@ -35,7 +36,7 @@ connectDB();
 
 app.use('/api/users', users);
 app.use('/api/account', account);
-
+app.use('/api/booking', booking);
 
 const port = process.env.PORT || 5000;
 
