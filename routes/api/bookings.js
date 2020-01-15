@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = require('../../config/keys').jwtSecret;
 const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 
 // @route POST api/booking/new
 // @desc Booking
@@ -70,6 +71,35 @@ router.put('/:id/reject', auth, async (req, res) => {
   try {
     const booking = await Booking.findOneAndUpdate({ _id: req.params.id }, { status: 'Rejected' });
 
+    const user = await Booking.findOne({ _id: req.params.id }).populate('user', 'email', User);
+
+    nodemailer.createTestAccount((err, account) => {
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.googlemail.com', // Gmail Host
+        port: 465, // Port
+        secure: true, // this is true as port is 465
+        auth: {
+          user: 'altemailstudent@gmail.com', //Gmail username
+          pass: 'Patr!ck01' // Gmail password
+        }
+      });
+
+      let mailOptions = {
+        from: '"Tattooz Support" <altemailstudent@gmail.com>',
+        to: user.user.email, // Recepient email address. Multiple emails can send separated by commas
+        subject: 'Booking Confirmation',
+        text: 'Please be advised the booking request you made is Rejected.'
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+      });
+    });
+
+
     res.json(booking);
   } catch (err) {
     console.error(err.message);
@@ -81,6 +111,34 @@ router.put('/:id/reject', auth, async (req, res) => {
 router.put('/:id/accept', auth, async (req, res) => {
   try {
     const booking = await Booking.findOneAndUpdate({ _id: req.params.id }, { status: 'Approved' });
+
+    const user = await Booking.findOne({ _id: req.params.id }).populate('user', 'email', User);
+
+    nodemailer.createTestAccount((err, account) => {
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.googlemail.com', // Gmail Host
+        port: 465, // Port
+        secure: true, // this is true as port is 465
+        auth: {
+          user: 'altemailstudent@gmail.com', //Gmail username
+          pass: 'Patr!ck01' // Gmail password
+        }
+      });
+
+      let mailOptions = {
+        from: '"Tattooz Support" <altemailstudent@gmail.com>',
+        to: user.user.email, // Recepient email address. Multiple emails can send separated by commas
+        subject: 'Booking Confirmation',
+        text: 'Please be advised the booking request you made is Approved.'
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+      });
+    });
 
     res.json(booking);
   } catch (err) {
